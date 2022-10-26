@@ -1,0 +1,34 @@
+---
+title: ""
+format: html
+page-layout: full
+toc: true
+css: index.css
+anchor-sections: false
+editor: source
+---
+
+## Course Content
+
+Statistical simulation methods: Bootstrapping, Cross validation, Permutation tests , Analysis of variance (ANOVA) models: One-way ANOVA, Two-way ANOVA, Experimental designs, Multivariate data analysis: similarity measures, multivariate probability distributions, multivariate inference, Multivariate Analysis of variance (MANOVA), multiple comparison tests, Cluster analysis, Nonparametric statistical inference, 
+Analysing Categorical data: Contingency tables, graphical summaries of two-way contingency tables, three-way 
+contingency tables, modelling categorical data, compile and self-publish scientific reports.
+
+
+All the concepts are demonstrated using `R software`.
+
+**Pre-requisites**: STA3052, STA3113, STA3131
+
+## Recommended Texts
+
+-   Lander, J.P. (2017). R for Everyone: Advanced Analytics and Graphics. 2nd Ed. Addison-Wesley Data & Analytics Series.
+
+-   Peng, R. D. (2018). R Programming for Data Science.
+
+-   Wickham (2017). Advanced R. https://adv-r.hadley.nz/
+
+
+## Course Evaluation
+
+-   Continuous Assesments (Mid Exam/Assignments): 40%
+-   End Semester Examination: 60%

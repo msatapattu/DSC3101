@@ -1,0 +1,610 @@
+---
+title: "DSC 3101 - Advanced Statistical Applications II"
+subtitle: "Permutation Tests"
+author: "Dr. Malima Atapattu"
+institute: "Department of Statistics & Computer Science"
+format: 
+  revealjs:
+      theme: [serif, custom.scss]
+      slide-number: true
+      chalkboard: 
+        theme: whiteboard
+      
+editor: visual
+---
+
+## Permutation
+
+::: incremental
+-   The word *permutation* refers to the arrangement of a set of objects into some specified order.
+:::
+
+. . .
+
+::: columns
+::: {.column width="50%"}
+![](images/Picture1.png)
+
+Each column is one possible permutation of the three colors.
+:::
+
+::: {.column width="50%"}
+![](images/Picture2.png)
+
+All possible permutations of the four letters A, B,C, and D.
+:::
+:::
+
+. . .
+
+-   There are $n!$ permutations for a vector of length $n$.
+
+## Permutation in R: All Possible Permutations
+
+::: incremental
+-   We can use *permn()* function in R package *"combinat"* to obtain all possible permutations of a given vector.
+
+-   For example, if you want all possible permutations of the vector $[1, 2, 3]$,
+:::
+
+. . .
+
+![](images/Picture3.png){fig-align="center"}
+
+## Permutation in R
+
+All possible permutations as a matrix:
+
+. . .
+
+\n
+
+```{r}
+library(combinat)
+
+# generating permutations of the numbers from 1 to 3
+my_list <- permn(3)
+
+# convert the list to a matrix
+my_matrix<-do.call(rbind,my_list)
+
+#take the unique rows
+my_matrix<-unique(my_matrix)
+
+my_matrix
+
+```
+
+## Permutation in R
+
+-   Next, we consider the permutations of the six letters a, b, c, d, e, f.
+
+. . .
+
+![](images/Picture4.png){fig-align="center"}
+
+```{r}
+# generating permutations of a vector with 6 letters
+
+my_list <- permn(c("a","b","c","d","e","f"))
+ 
+# convert the list to a matrix
+my_matrix<-do.call(rbind,my_list)
+
+#take the unique rows
+my_matrix<-unique(my_matrix)
+
+```
+
+## Permutation in R
+
+```{r}
+#| echo: true
+
+
+head(my_matrix)
+
+dim(my_matrix)
+
+```
+
+. . .
+
+-   No. of all possible permutations = 6!=720.
+
+## Permutation in R: Generate a Random Permutation
+
+![](images/Picture5.png){fig-align="center"}
+
+## Permutation Tests
+
+::: incremental
+-   Permutation tests do not rely on assumptions about the distribution of the data, as some other tests do.They are therefore considered to be nonparametric tests.
+
+-   Permutation tests work by resampling the observed data many times in order to determine a *p*-value for the test. (Different from the bootstrap because there we resample data with replacement but here not.)
+
+-   Here we estimate the sampling distribution of the test statistic by calculating the value of the test statistic on all possible permutations of the sample.
+:::
+
+## Permutation Tests
+
+::: incremental
+-   P-value is calculated as the proportion of permuted datasets that produce a test statistic at least as extreme as the one observed from the actual data.
+
+-   Permutation tests can only be used for a null hypothesis of 'no effect'.
+
+-   If the null hypothesis is true the shuffled data sets should look like the real data, otherwise they should look different from the actual data.
+:::
+
+## Permutation Tests
+
+![](images/Picture6.png){fig-align="center"}
+
+. . .
+
+Empirical distribution of test statistic. The red line is the value of the observed test statistic.
+
+## Achieved Significance Level
+
+::: incremental
+-   Suppose we have some test statistic $\hat\theta = s(x)$ and suppose that larger values of $\hat\theta$ provide more evidence against $H_0$.
+
+-   Given $\hat\theta$, the achieved significance level (ASL) of our test is $$ASL = P(\hat{\theta^*} \ge \hat \theta|H_0 \text{ true})$$ which is the probability of observing a test statistic as or more extreme than $\hat\theta$ under the assumption that $H_0$ is true.
+:::
+
+# One-Sample Permutation Tests
+
+## One-Sample (or Paired Sample) Problem
+
+::: incremental
+-   For the one-sample location problem, suppose we have $n$ observations.
+    -   $X_1, \dots , X_n \overset{\text{iid}}{\sim} F$ if the one-sample situation
+
+    -   $Z_1, \dots , Z_n \overset{\text{iid}}{\sim} F$ with $Z_j = X_j-Y_j$ if the paired-sample situation
+:::
+
+## One-Sample (or Paired Sample) Problem
+
+We want to make inferences about the location of the data.
+
+::: incremental
+-   Let $F$ denote the population distribution.
+-   Let $\theta$ denote the median of $F$.
+-   Null hypothesis is $H_0 : \theta = \theta_0$.
+-   Three possible alternatives: $H_1: \theta < \theta_0, \quad H_1: \theta > \theta_0, \quad H_1: \theta \ne \theta_0$.
+:::
+
+## Permutation Vector (One-Sample)
+
+-   Let $\mathbf{g} = (g_1, g_2, \dots , g_n)$ denote the permutation vector denoting which observations are above $\theta_0 (g_i = 1)$ and which are below $\theta_0 (g_i = -1)$.
+
+    -   There are $2^n$ different possible $\mathbf{g}$ vectors (each $g_i$ can be $1$ or $−1$).
+
+    -   If $H_0: \theta = \theta_0$ is true, then $P(X < \theta_0)=0.5$ by definition.
+
+## Permutation Lemma (One-Sample)
+
+Under $H_0: \theta = \theta_0$,
+
+the vector $\mathbf{g}$ has probability $1/2^n$ of equaling each of the $2^n$ different possible outcomes.
+
+## Permutation Achieved Significance Level (One-Sample)
+
+The *permutation ASL* is the permutation probability that $\hat{\theta}^*$ exceeds $\hat\theta$: $$ASL_{perm} = \# \text{ of }\{|\hat{\theta}^*_b|\ge |\hat\theta| \}/2^n \quad \quad (\text{for two-sided alternative})$$ where $\{\hat{\theta}^*_b\}^{2^n}_{b=1}$ is the set of all possible test statistics under $H_0$.
+
+. . .
+
+-   For $H_1: \theta < \theta_0,\quad ASL_{perm}= \# \text{ of } \{\hat{\theta}^*_b \le \hat\theta\}/2^n$
+
+. . .
+
+-   For $H_1: \theta > \theta_0,\quad ASL_{perm}= \# \text{ of } \{\hat{\theta}^*_b \ge \hat\theta\}/2^n$
+
+## One-Sample Permutation Test (Monte Carlo)
+
+::: incremental
+-   When $2^n$ is large, forming $\hat{\theta}_b^*$ for all $2^n$ possible $\mathbf{g}$ vectors is computationally expensive. Therefore, a *Monte Carlo approach* can be used.
+
+-   Procedure for approximating $ASL_{perm}$ using Monte Carlo approach:
+
+    1.  Randomly sample $B$ permutation vectors $\mathbf{g_1^*}, \dots , \mathbf{g_B^*}$.
+
+    2.  Evaluate the permutation replication test statistic $\hat\theta_b^*= s(\mathbf{g_b^*,x})$ where $\mathbf{x}=x_1, \dots, x_n$ is the observed vector of data.
+:::
+
+## Monte Carlo approach (continued)
+
+3.  Approximate $ASL_{perm}$ using $$ASL_{perm} = \# \text{ of }\{|\hat{\theta}^*_b|\ge |\hat\theta| \}/B$$
+
+. . .
+
+This assumes that the statistic $\hat\theta = s(\mathbf{g,x})$ is designed such that larger absolute values provide more evidence against $H_0$.
+
+## Several Possible Test Statistics
+
+-   Means
+-   Geometric Means
+-   t statistic
+
+re-calculate for each permutation.
+
+## One-Sample Permutation Test: R Function
+
+Example of an R function for performing a one-sample permutation test:
+
+![](images/Picture7.png){fig-align="center"}
+
+```{r}
+perm1samp <- function(x,myfun=mean,mu=0,nsamp=10000,alternative=c("two.sided","less",
+                                                                  "greater")){
+x = x - mu
+n = length(x)
+theta.hat = myfun(x)
+gmat = replicate(nsamp,sample(x=c(1,-1),size=n,replace=TRUE))
+theta.mc = apply(gmat*abs(x),2,myfun)
+if(alternative[1]=="less"){
+aslperm = sum(theta.mc <= theta.hat) / nsamp
+} else if(alternative[1]=="greater"){
+aslperm = sum(theta.mc >= theta.hat) / nsamp
+} else{
+aslperm = sum(abs(theta.mc) >= abs(theta.hat)) / nsamp
+}
+list(theta.hat=theta.hat,theta.mc=theta.mc,asl=aslperm)
+}
+```
+
+## Example using Mean as the Test Statistic
+
+```{r}
+#| echo: true
+
+#Generate a dataset from a normal distribution with mean 1 and variance 1
+set.seed(1)
+n = 50
+x = rnorm(n,mean=1,sd=1)
+mean(x)
+
+#Test the hypothesis H0: mu =1 vs H1: mu does not equal 1
+results = perm1samp(x,mu=1,alternative = 'two.sided')
+
+#P-value
+results$asl
+
+```
+
+## Example using Mean as the Test Statistic
+
+Now let's consider several null values and test the hypotheses.
+
+```{r}
+#| echo: true
+
+mseq = seq(0.5,1.5,by=0.1)
+pvals = rep(0,length(mseq))
+for(k in 1:length(mseq)){
+ pvals[k] = perm1samp(x,mu=mseq[k])$asl
+}
+
+```
+
+## Plot of the p-value vs null value
+
+```{r}
+#| echo: true
+plot(mseq,pvals,type='b',xlab =  "Null value", ylab = "Permutation ASL")
+abline(h=0.05, lty=2,col='red')
+
+```
+
+# Two-sample permutation tests
+
+## Two-Sample Problem
+
+::: incremental
+-   For the two-sample location problem, we have $N=m+n$ observations.
+    -   $X_1, \dots , X_m$ are iid random sample from population 1.
+    -   $Y_1, \dots , Y_n$ are iid random sample from population 2.
+:::
+
+## Two-Sample Problem
+
+::: incremental
+-   We want to make inferences about difference in distributions.
+    -   Let $F$ and $G$ denote distributions of populations 1 and 2.
+    -   $H_0: F(z) = G(z)$ for all $z$. (The two distributions are same.)
+    -   $H_a: F(z) \ne G(z)$ for some $z$. (The two distributions are different.)
+:::
+
+## Permutation Vector (TWo-Sample)
+
+::: incremental
+-   Let $\mathbf{g} = (g_1, g_2, \dots, g_N)$ denote the permutation vector denoting which observation belongs to which group.
+
+-   $\mathbf{g}$ contains $m$ $X$− group labels and $n$ $Y$− group labels.
+
+-   $g_i$ denotes group membership of $z_i$, where $z_i$ is $i^{th}$ observation for combined sample of $N$ observations.
+
+-   There are $N \choose n$ different possible $\mathbf{g}$ vectors.
+:::
+
+## Permutation Lemma (Two-Sample)
+
+Under $H_0: F(z)=G(z)$ for all $z$, the vector $\mathbf{g}$ has probability $\dfrac{1}{N \choose n}=\dfrac{m! n!}{N}$ of equaling each of the ${N \choose n} = \dfrac{N}{m! n!}$ different possible outcomes.
+
+## Permutation Achieved Significance Level (Two-Sample)
+
+The *permutation ASL* is the permutation probability that $\hat{\theta}^*$ exceeds $\hat\theta$: $$ASL_{perm} = \# \text{ of }\{|\hat{\theta}^*_b|\ge |\hat\theta| \}/{N \choose n} \quad \quad (\text{for two-sided alternative})$$ where $\{\hat{\theta}^*_b\}^{N \choose n}_{b=1}$ is the set of all possible test statistics under $H_0$.
+
+## Permutation Achieved Significance Level (Two-Sample)
+
+-   For $H_1: \theta < \theta_0,\quad ASL_{perm}= \# \text{ of } \{\hat{\theta}^*_b \le \hat\theta\}/{N \choose n}$
+
+. . .
+
+-   For $H_1: \theta > \theta_0,\quad ASL_{perm}= \# \text{ of } \{\hat{\theta}^*_b \ge \hat\theta\}/{N \choose n}$
+
+. . .
+
+-   When $N \choose n$ is large, forming $\hat{\theta_b}^*$ for all $N \choose n$ possible $\mathbf{g}$ vectors is computationally expensive. Therefore, a *Monte Carlo approach* can be used.
+
+## Two-Sample Permutation Test (Monte Carlo Approch)
+
+Procedure for approximating $ASL_{perm}$ using Monte Carlo approach:
+
+::: incremental
+1.  Randomly sample B permutation vectors $\mathbf{g_1^*}, \dots, \mathbf{g_B^*}$.
+
+2.  Evaluate the permutation replication test statistic $\hat{\theta_b}^* = s(\mathbf{g_b^*,z})$ where $\mathbf{z} = (z_1, \dots, z_N)$ is the observed vector of combined data.
+
+3.  Approximate $ASL_{perm}$ using $\hat{ASL}_{perm} = \# \text{ of }\{|\hat{\theta}^*_b|\ge |\hat\theta| \}/B$.
+:::
+
+## Two-Sample Permutation Test (Monte Carlo Approch)
+
+-   This assumes that the statistic $\hat\theta = s(\mathbf{g,x})$ is designed such that larger absolute values provide more evidence against $H_0$.
+
+-   Two common test statistics that can be used are differences of means and differences of medians of the two samples.
+
+## Two-Sample Permutation Test: R Function
+
+Example of an R function for performing a two-sample permutation test:
+
+![](images/Picture8.png){fig-align="center"}
+
+```{r}
+meandif <- function(x,y) mean(x) - mean(y) #function to get the mean difference 
+
+
+perm2samp <- function(x,y,myfun=meandif,nsamp=10000,
+alternative=c("two.sided","less","greater")){
+theta.hat = myfun(x,y)
+m = length(x)
+n = length(y)
+N = m + n
+z = c(x,y)
+gmat = replicate(nsamp,sample.int(N,m))
+theta.mc = apply(gmat,2,function(g,z){myfun(z[g],z[-g])},z=z)
+if(alternative[1]=="less"){
+aslperm = sum(theta.mc <= theta.hat) / nsamp
+} else if(alternative[1]=="greater"){
+aslperm = sum(theta.mc >= theta.hat) / nsamp
+} else{
+aslperm = sum(abs(theta.mc) >= abs(theta.hat)) / nsamp
+}
+list(theta.hat=theta.hat,theta.mc=theta.mc,asl=aslperm)
+}
+```
+
+## Example using Mean Difference as the Test Statistic
+
+```{r}
+#| echo: true
+
+
+set.seed(1)
+# Simulated data for two samples 
+x = rnorm(15)
+y = rnorm(20,mean=1)
+
+# Number of different possible g vectors
+choose(35,15)
+
+meandif(x,y)
+
+#permutation test
+ptest = perm2samp(x,y,myfun=meandif,alternative = 'two.sided')
+
+ptest$asl
+
+```
+
+# Correlation Permutation Tests
+
+## Association/Correlation Problem
+
+. . .
+
+Suppose we have paired data $(X_i,Y_i) \overset{\text{iid}}{\sim} F$ for $i = 1, \dots , n$ where $F$ is some bivariate distribution.
+
+. . .
+
+Question: **Are 𝑋 and 𝑌 statistically associated with one another?**
+
+. . .
+
+-   $X$ and $Y$ are independent if and only if $F_{XY}(x,y) = F_X (x) F_Y (y)$
+
+. . .
+
+-   If $X$ and $Y$ are correlated/associated, they are dependent
+
+. . .
+
+-   Null hypothesis is $H_0: \rho = 0$ where $\rho = cor(X,Y)$
+
+. . .
+
+## Association/Correlation Problem
+
+-   Different definitions of $\rho$ measure different types of association. (Pearson, Kendall, Spearman)
+
+. . .
+
+**How can we use a permutation test to answer this question?**
+
+## Permutation Vector (Correlation)
+
+::: incermental
+Let $\mathbf{g} = (g_1, g_2, \dots , g_n)$ denote the permutation vector which contains the integers $\{1, \dots , n\}$ in some order.
+
+-   There are $n!$ different possible $\mathbf{g}$ vectors (orderings of $y_i$).
+
+-   If $H_0: \rho = 0$ is true, then reordering of $y_i$ doesn't affect correlation.
+:::
+
+## Permutation Lemma (Correlation)
+
+Under $H_0: \rho = 0$, the vector $\mathbf{g}$ has probability $\dfrac{1}{n!}$ of equaling each of the $n!$ different possible outcomes.
+
+
+## Permutation Achieved Significance Level (Correlation)
+
+The permutation ASL is the permutation probability that $\hat{\rho}^*$ exceeds $\hat\rho$: $$ASL_{perm} = \# \text{ of }\{|\hat{\rho}^*_b|\ge |\hat\rho| \}/n! \quad \quad (\text{for two-sided alternative})$$ where $\{\hat{\rho}^*_b\}^{n!}_{b=1}$ is the set of all possible test statistics under $H_0$.
+
+## Permutation Achieved Significance Level (Correlation)
+
+-  For $H_1: \rho < \rho_0,\quad ASL_{perm}= \# \text{ of } \{\hat{\rho}^*_b \le \hat\rho\}/n!$
+
+. . .
+
+-   For $H_1: \rho > \rho_0,\quad ASL_{perm}= \# \text{ of } \{\hat{\rho}^*_b \ge \hat\rho\}/n!$
+
+
+. . . 
+
+When $n!$ is large, forming $\hat{\rho}^*_b$ for all $n!$ possible $\mathbf{g}$ vectors is computationally expensive. Therefore, a *Monte Carlo approach* can be used.
+
+
+## Correlation Permutation Test (Monte Carlo)
+
+Procedure for approximating $ASL_{perm}$ using Monte Carlo approach:
+
+
+  1.  Randomly sample $B$ permutation vectors $\mathbf{g_1^*}, \dots , \mathbf{g_B^*}$.
+    
+  2. Evaluate the permutation replication $\hat{\rho}^*_b = cor(\mathbf{x,y_b})$ where $\mathbf{x}$ is the observed vector and $\mathbf{y_b}$ is $b^{th}$ permuted copy of $\mathbf{y}$.
+
+  3.  Approximate $ASL_{perm}$ using $$ASL_{perm} = \# \text{ of }\{|\hat{\rho}^*_b|\ge |\hat\rho| \}/B$$
+  
+## Monte Carlo approach (continued)
+
+- This assumes that the correlation statistic $\hat\rho = cor(\mathbf{x,y})$ is designed such that larger absolute values provide more evidence against $H_0$.
+
+- Could use any reasonable correlation measure. Popular choices include Pearson, Spearman, and Kendall correlation coefficients.
+
+## Correlation Permutation Test: R Function
+
+Example of an R function for performing a correlation permutation test:
+
+![](images/Picture9.png){fig-align="center"}
+
+```{r}
+permcor <- function(x,y,method="pearson",nsamp=10000,alternative=c("two.sided","less",
+                                                                   "greater")){
+n = length(x)
+if(n!=length(y)) stop("lengths of x and y must match")
+theta.hat = cor(x,y,method=method)
+gmat = replicate(nsamp,sample.int(n))
+theta.mc = apply(gmat,2,function(g)cor(x,y[g],method=method))
+if(alternative[1]=="less"){
+aslperm = sum(theta.mc <= theta.hat) / nsamp
+} else if(alternative[1]=="greater"){
+aslperm = sum(theta.mc >= theta.hat) / nsamp
+} else{
+aslperm = sum(abs(theta.mc) >= abs(theta.hat)) / nsamp
+}
+list(theta.hat=theta.hat,theta.mc=theta.mc,asl=aslperm)
+}
+```
+## Example: Correlation Permutation Test using Pearson Correlation Coefficient
+
+```{r}
+#| echo: true
+
+
+library(MASS)
+set.seed(1)
+n = 50
+data = mvrnorm(n , c(0,0), matrix(c(1,0.5,0.5,1),nrow=2))
+x=data[,1]
+y=data[,2]
+
+ptest = permcor(x,y,method = "pearson", alternative = 'two.sided')
+ptest$asl
+```
+
+## Example: Correlation Permutation Test using Spearman/Kendall Correlation Coefficient
+
+Let’s use the same data in previous slide which is from a bivariate normal distribution.
+
+. . .
+
+```{r}
+#| echo: true
+
+ptest_Sp = permcor(x,y,method = "spearman", alternative = 'two.sided')
+ptest_Sp$asl
+
+ptest_K = permcor(x,y,method = "kendall", alternative = 'two.sided')
+ptest_K$asl
+
+```
+
+## Exercise 1
+ Consider the *EuStockMarkets* data set in R which provides daily closing prices of four major European stock indices: Germany DAX (Ibis), Switzerland SMI, France CAC, and UK FTSE. Using this data set, test whether there is a significance difference in the closing prices of the SMI and CAC indices. Use a permutation test at 5% level of significance.
+ 
+```{r}
+#| echo: true
+data(EuStockMarkets)
+
+```
+
+
+
+
+```{r}
+
+#SMI = EuStockMarkets[,2]
+
+#CAC = EuStockMarkets[,3]
+#ptest = perm2samp(SMI,CAC,myfun=meandif,alternative = 'two.sided')
+#ptest$asl
+
+#ptest = perm2samp(SMI,CAC,myfun=meandif,alternative = 'less')
+#ptest$asl
+
+#ptest = perm2samp(SMI,CAC,myfun=meandif,alternative = 'greater')
+#ptest$asl
+```
+
+
+## Exercise 2
+
+Consider the *EuStockMarkets* data set again and test whether there is an association between the two indices SMI and CAC at 5% level of significance.
+
+```{r}
+data(EuStockMarkets)
+SMI = EuStockMarkets[,2]
+CAC = EuStockMarkets[,3]
+
+#ptest_K = permcor(SMI,CAC,method = "kendall",nsamp = 1000, alternative = 'two.sided')
+
+#ptest_K$asl
+
+#ptest_K = permcor(SMI,CAC,method = "kendall",nsamp = 1000, alternative = 'greater')
+
+#ptest_K$asl
+#ptest_K = permcor(SMI,CAC,method = "kendall",nsamp = 1000, alternative = 'less')
+
+#ptest_K$asl
+```
